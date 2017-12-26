@@ -52,6 +52,7 @@
                 data: {}, //节点的数据
                 tree: [
                     {
+                        id: "00000000-0000-0000-0000-000000000000",
                         title: this.$t('tree.catalog'),
                         expand: true,
                         render: (h, {root, node, data}) => {
@@ -90,24 +91,10 @@
                                         },
                                         on: {
                                             click: () => {
-                                                this.append(data)
+                                                this.append(node, data)
                                             }
                                         }
                                     }),
-                                    h('Button', {
-                                        props: Object.assign({}, this.buttonProps, {
-                                            icon: 'checkmark',
-                                            type: 'primary',
-                                        }),
-                                        style: {
-                                            width: '52px',
-                                        },
-                                        on: {
-                                            click: () => {
-                                                this.preserve(data)
-                                            }
-                                        }
-                                    })
                                 ])
                             ]);
                         },
@@ -128,9 +115,9 @@
         },
         computed: {
             ...mapState({
-                    'article': state => state.common.article,
-                    'tocs': state => state.common.tocs,
-                    'name': state => state.common.name,
+                    'article': state => state.article,
+                    'tocs': state => state.tocs,
+                    'kind': state => state.kind,
                 }
             ),
             createTime: function () {
@@ -162,7 +149,7 @@
         },
         mounted: function () {
             let _self = this;
-            Request.fetchAsync('/nodes/' + _self.name, 'get').then(data => {
+            Request.fetchAsync('/nodes/' + _self.kind, 'get').then(data => {
                 this.tree[0].children = data;
             });
         },
@@ -234,7 +221,7 @@
                             },
                             on: {
                                 click: () => {
-                                    this.append(data)
+                                    this.append(node, data)
                                 }
                             }
                         }),
@@ -282,13 +269,18 @@
                 ]);
             },
             editNode(data) {
+
                 this.nodeModal = true;
                 this.data = data;
                 this.nodeTitle = data.title;
             },
             ok() {
-                this.data.title = this.nodeTitle;
-                this.nodeModal = false;
+                let _self = this;
+                Request.fetchAsync('/admin/nodes/' + _self.data.id, 'patch', {"title": _self.nodeTitle}).then(result => {
+                    _self.data.title = this.nodeTitle;
+                    _self.nodeModal = false;
+                });
+
             },
             editArticle(data) {
                 this.articleModal = true;
@@ -299,16 +291,20 @@
                     _self.getArticle(res);
                 });
             },
-            append(data) {
+            append(node, data) {
                 const children = data.children || [];
                 const _self = this;
-                Request.fetchAsync('/getId', 'get').then(result => {
-                    children.push({
-                        id: result,
-                        title: _self.$t('tree.newNode'),
-                        expand: true,
-                        active: false,
-                    });
+                let record = {
+                    title: _self.$t('tree.newNode'),
+                    expand: true,
+                    active: false,
+                    parent_id: node.node.id,
+                    kind: _self.kind
+                };
+
+                Request.fetchAsync('/admin/nodes', 'POST', record).then(result => {
+                    record.id = result;
+                    children.push(record);
                     _self.$set(data, 'children', children);
                 });
 

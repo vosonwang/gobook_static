@@ -21,11 +21,15 @@ request.fetchAsync = async (url, method, data) => {
         let header = new Headers();
         let a = Util.getCookie('Authorization');
 
-        if (!a) {
+        if (!!a) {
             header.append('Authorization', a);
         }
 
-        let response = await fetch(url, {method: method, body: JSON.stringify(data), headers: header});
+        let response = await fetch(url, {method: method.toUpperCase(), body: JSON.stringify(data), headers: header});
+
+        if(response.status===401){
+
+        }
 
         //Response 实现了 Body, 所以可用Body的json()方法
         return await response.json();
@@ -42,7 +46,7 @@ request.fetchAsync = async (url, method, data) => {
 
 request.uploadImg = async (url, method, data) => {
     try {
-        let response = await fetch(url, {method: method, body: data});
+        let response = await fetch(url, {method: method.toUpperCase(), body: data});
         return await response.json();
     } catch (e) {
         iView.Message.error({
@@ -56,7 +60,7 @@ request.uploadImg = async (url, method, data) => {
 
 request.uploadFile = async (url, method, data, header) => {
     try {
-        let response = await fetch(url, {method: method, body: data, headers: header});
+        let response = await fetch(url, {method: method.toUpperCase(), body: data, headers: header});
         return await response.json();
     } catch (e) {
         iView.Message.error({
@@ -68,16 +72,6 @@ request.uploadFile = async (url, method, data, header) => {
     }
 };
 
-// request.isError = (response) => {
-//     switch (response.status) {
-//         case 200:
-//         case 201:
-//         case 202:
-//             return response.json();
-//         default:
-//             throw new Error(response.statusText)
-//
-//     }
-// };
+
 
 export default request

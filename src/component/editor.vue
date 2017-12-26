@@ -97,8 +97,8 @@
         },
         computed: {
             ...mapState({
-                    'id': state => state.common.id,
-                    'article': state => state.common.article,
+                    'id': state => state.id,
+                    'article': state => state.article,
                 }
             )
         },

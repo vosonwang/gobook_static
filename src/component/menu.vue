@@ -55,9 +55,9 @@
         },
         methods:{
             getN:function (name) {
-                this.getName({"name":name,"locale":this.$i18n.locale})
+                this.getKind({"kind":name,"locale":this.$i18n.locale})
             },
-            ...mapActions(['getName'])
+            ...mapActions(['getKind'])
         }
     }
 </script>

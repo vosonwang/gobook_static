@@ -20,10 +20,6 @@ module.exports = merge(webpackBaseConfig, {
     devServer: {
         proxy: {
             /*TODO 修改配置文件需要重启server才会有效*/
-            '/tocs': {
-                target: 'http://localhost:8300',
-                changeOrigin: true
-            },
             '/tokens': {
                 target: 'http://localhost:8300',
                 changeOrigin: true
@@ -41,6 +37,10 @@ module.exports = merge(webpackBaseConfig, {
                 changeOrigin: true
             },
             '/nodes': {
+                target: 'http://localhost:8300',
+                changeOrigin: true
+            },
+            '/admin/nodes': {
                 target: 'http://localhost:8300',
                 changeOrigin: true
             },

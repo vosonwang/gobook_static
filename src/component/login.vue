@@ -2,7 +2,7 @@
     <Modal id="login" v-model="modal2" width="300" :closable="false" :mask-closable="false">
         <Form ref="loginForm" :model="loginForm" :rules="ruleInline">
             <FormItem prop="user">
-                <Input type="text" v-model="loginForm.user" placeholder="Username"
+                <Input type="text" v-model="loginForm.username" placeholder="Username"
                        icon="ios-person-outline"></Input>
             </FormItem>
             <FormItem prop="password">
@@ -26,7 +26,7 @@
     import Request from '../libs/request'
     import Util from '../libs/util'
     import Lang from './lang.vue'
-
+    import {mapActions} from 'vuex'
 
     export default {
         name: "login",
@@ -35,14 +35,14 @@
         },
         data() {
             return {
-                modal2:false,
+                modal2: false,
                 modal_loading: false,
                 loginForm: {
-                    user: '',
+                    username: '',
                     password: '',
                 },
                 ruleInline: {
-                    user: [
+                    username: [
                         {required: true, message: 'Please fill in the user name', trigger: 'blur'}
                     ],
                     password: [
@@ -57,8 +57,8 @@
                 }
             }
         },
-        mounted:function () {
-            this.modal2=!Util.getCookie("login")
+        mounted: function () {
+            this.modal2 = !Util.getCookie("login")
         },
         methods: {
             del: function (name) {
@@ -78,8 +78,11 @@
 
                             } else {
                                 _self.modal_loading = false;
-                                this.modal2=false;
+                                this.modal2 = false;
                                 Util.setCookie("login", true, 1);
+                                this.getUser(data.username);
+                                Util.setCookie("username", data.username, 1);
+                                Util.setCookie("userId", data.userId, 1);
                                 _self.$Message.success({
                                     content: "登录成功！",
                                     duration: 2,
@@ -91,6 +94,7 @@
                 })
 
             },
+            ...mapActions(['getUser'])
 
         }
     }

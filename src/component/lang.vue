@@ -30,16 +30,16 @@
         },
         computed: {
             ...mapState({
-                    'name': state => state.common.name,
+                    'kind': state => state.kind,
                 }
             ),
         },
         methods: {
             change: function (a) {
                 this.$i18n.locale = a;
-                this.getName({"name":this.name[1], "locale":a})
+                this.getKind({"kind":this.kind[1], "locale":a})
             },
-            ...mapActions(['getName'])
+            ...mapActions(['getKind'])
         }
     }
 </script>
