@@ -1,0 +1,101 @@
+<template>
+    <Modal id="login" v-model="modal2" width="300" :closable="false" :mask-closable="false">
+        <Form ref="loginForm" :model="loginForm" :rules="ruleInline">
+            <FormItem prop="user">
+                <Input type="text" v-model="loginForm.user" placeholder="Username"
+                       icon="ios-person-outline"></Input>
+            </FormItem>
+            <FormItem prop="password">
+                <Input type="password" v-model="loginForm.password" placeholder="Password"
+                       icon="ios-locked-outline"></Input>
+            </FormItem>
+            <FormItem>
+                <lang></lang>
+            </FormItem>
+            <FormItem>
+                <Button type="error" size="large" long :loading="modal_loading" @click="del('loginForm')">
+                    {{$t('index.login')}}
+                </Button>
+            </FormItem>
+        </Form>
+        <div slot="footer"></div>
+    </Modal>
+</template>
+
+<script>
+    import Request from '../libs/request'
+    import Util from '../libs/util'
+    import Lang from './lang.vue'
+
+
+    export default {
+        name: "login",
+        components: {
+            Lang
+        },
+        data() {
+            return {
+                modal2:false,
+                modal_loading: false,
+                loginForm: {
+                    user: '',
+                    password: '',
+                },
+                ruleInline: {
+                    user: [
+                        {required: true, message: 'Please fill in the user name', trigger: 'blur'}
+                    ],
+                    password: [
+                        {required: true, message: 'Please fill in the password.', trigger: 'blur'},
+                        {
+                            type: 'string',
+                            min: 6,
+                            message: 'The password length cannot be less than 6 bits',
+                            trigger: 'blur'
+                        }
+                    ]
+                }
+            }
+        },
+        mounted:function () {
+            this.modal2=!Util.getCookie("login")
+        },
+        methods: {
+            del: function (name) {
+                this.$refs[name].validate((valid) => {
+                    if (valid) {
+                        this.modal_loading = true;
+                        let _self = this;
+
+                        Request.fetchAsync('/tokens', 'post', _self.loginForm).then(data => {
+                            if (!data) {
+                                _self.modal_loading = false;
+                                _self.$Message.error({
+                                    content: "用户名或密码错误！",
+                                    duration: 2,
+                                })
+
+
+                            } else {
+                                _self.modal_loading = false;
+                                this.modal2=false;
+                                Util.setCookie("login", true, 1);
+                                _self.$Message.success({
+                                    content: "登录成功！",
+                                    duration: 2,
+                                });
+                                Util.setCookie("Authorization", data.token, 1);
+                            }
+                        });
+                    }
+                })
+
+            },
+
+        }
+    }
+</script>
+
+<style scoped>
+
+</style>

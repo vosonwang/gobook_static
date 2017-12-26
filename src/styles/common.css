@@ -1,0 +1,12 @@
+/*这是index.vue这一级别的公用css 优先级没有main.js中导入的样式高*/
+
+#login .ivu-modal-body {
+    padding-top: 20px;
+    padding-bottom: 0;
+}
+
+#login .ivu-modal-footer{
+    padding-top: 1px;
+    padding-bottom: 0px;
+    border: none;
+}
