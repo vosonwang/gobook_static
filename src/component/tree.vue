@@ -285,7 +285,6 @@
             editArticle(data) {
                 this.articleModal = true;
                 this.articleTitle = data.title;
-                this.getId(data.id);
                 let _self = this;
                 Request.fetchAsync('/articles/' + data.id, 'get').then(res => {
                     _self.getArticle(res);
@@ -349,7 +348,7 @@
                     parent.children = parent.children.slice(0, index - 1).concat(parent.children.slice(index, index + 1), parent.children.slice(index - 1, index), parent.children.slice(index + 1, length));
                 }
             },
-            ...mapActions(['getId', 'getArticle', "getTocs"])
+            ...mapActions([ 'getArticle', "getTocs"])
 
         },
     }

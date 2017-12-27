@@ -2,11 +2,12 @@ import iView from 'iview';
 import i18n from './i18n'
 import Vue from 'vue';
 import Util from './util'
+import store from '../store'
 
 let request = {};
 
 let vue = new Vue({
-    i18n
+    i18n,
 });
 
 /**
@@ -28,18 +29,24 @@ request.fetchAsync = async (url, method, data) => {
         let response = await fetch(url, {method: method.toUpperCase(), body: JSON.stringify(data), headers: header});
 
         if(response.status===401){
-
+            Util.setCookie('login','',-1);
+            store.dispatch('showLogin',true);
+            throw new Error("401")
         }
 
         //Response 实现了 Body, 所以可用Body的json()方法
         return await response.json();
     } catch (e) {
+        let a=vue.$t('request.err');
+        if(e.message==="401"){
+         a=vue.$t('request.timeout')
+        }
         iView.Message.error({
-            content: vue.$t('request.err'),
+            content: a,
             duration: 2,
-
         });
-        console.log(e)
+
+
     }
 };
 

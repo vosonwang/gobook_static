@@ -43,12 +43,14 @@
     import M from '../../component/menu.vue'
     import Login from '../../component/login.vue'
 
+
     export default {
         components: {
             User,
             Catalog,
             M,
             Login
-        }
+        },
+
     }
 </script>

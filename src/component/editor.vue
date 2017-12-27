@@ -34,16 +34,13 @@
     import 'mavon-editor/dist/css/index.css'
     import {mapState, mapActions} from 'vuex'
     import Request from '../libs/request'
-    import moment from 'moment'
     import utf8 from 'utf8'
 
     export default {
         data() {
             return {
                 toolbars: {
-                    undo: true, // 上一步
-                    redo: true, // 下一步
-                    trash: true, // 清空
+
                     bold: true, // 粗体
                     italic: true, // 斜体
                     header: true, // 标题

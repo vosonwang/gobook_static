@@ -32,6 +32,7 @@ let messages = {
         },
         request: {
             err: '哪里出问题了，请联系管理员！',
+            timeout:'会话超时，请重新登录！'
         },
         user: {
             pw: '修改密码'
@@ -66,7 +67,8 @@ let messages = {
             artSuccess: 'Article Saved！'
         },
         request: {
-            err: 'Oh!Something wrong，contact with the admin！',
+            err: 'Something wrong，contact with the admin!',
+            timeout:'Session expired, please logon again!'
         },
         user: {
             pw: 'Change Password'

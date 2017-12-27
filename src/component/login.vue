@@ -1,5 +1,5 @@
 <template>
-    <Modal id="login" v-model="modal2" width="300" :closable="false" :mask-closable="false">
+    <Modal id="login" v-model="loginModal" width="300" :closable="false" :mask-closable="false">
         <Form ref="loginForm" :model="loginForm" :rules="ruleInline">
             <FormItem prop="user">
                 <Input type="text" v-model="loginForm.username" placeholder="Username"
@@ -26,7 +26,7 @@
     import Request from '../libs/request'
     import Util from '../libs/util'
     import Lang from './lang.vue'
-    import {mapActions} from 'vuex'
+    import {mapActions, mapState} from 'vuex'
 
     export default {
         name: "login",
@@ -35,7 +35,6 @@
         },
         data() {
             return {
-                modal2: false,
                 modal_loading: false,
                 loginForm: {
                     username: '',
@@ -57,8 +56,17 @@
                 }
             }
         },
-        mounted: function () {
-            this.modal2 = !Util.getCookie("login")
+        computed: {
+            ...mapState({
+                    'loginModal': state => state.modal,
+                }
+            ),
+        },
+        mounted:function () {
+            //console.log(Util.getCookie('login'))
+          if(Util.getCookie('login')!=="true"){
+              this.showLogin(true);
+          }
         },
         methods: {
             del: function (name) {
@@ -78,7 +86,7 @@
 
                             } else {
                                 _self.modal_loading = false;
-                                this.modal2 = false;
+                                this.showLogin(false);
                                 Util.setCookie("login", true, 1);
                                 this.getUser(data.username);
                                 Util.setCookie("username", data.username, 1);
@@ -94,7 +102,7 @@
                 })
 
             },
-            ...mapActions(['getUser'])
+            ...mapActions(['getUser', 'showLogin'])
 
         }
     }
