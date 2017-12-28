@@ -28,18 +28,19 @@ request.fetchAsync = async (url, method, data) => {
 
         let response = await fetch(url, {method: method.toUpperCase(), body: JSON.stringify(data), headers: header});
 
-        if(response.status===401){
-            Util.setCookie('login','',-1);
-            store.dispatch('showLogin',true);
+        if (response.status === 401) {
+            Util.setCookie('login', '', -1);
+            store.dispatch('showLogin', true);
             throw new Error("401")
         }
 
         //Response 实现了 Body, 所以可用Body的json()方法
+        /*TODO 我要直接看到错误信息，而不是json*/
         return await response.json();
     } catch (e) {
-        let a=vue.$t('request.err');
-        if(e.message==="401"){
-         a=vue.$t('request.timeout')
+        let a = vue.$t('request.err');
+        if (e.message === "401") {
+            a = vue.$t('request.timeout')
         }
         iView.Message.error({
             content: a,
@@ -78,7 +79,6 @@ request.uploadFile = async (url, method, data, header) => {
         console.log(e)
     }
 };
-
 
 
 export default request

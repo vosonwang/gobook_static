@@ -7,7 +7,7 @@
             </FormItem>
             <FormItem prop="password">
                 <Input type="password" v-model="loginForm.password" placeholder="Password"
-                       icon="ios-locked-outline"></Input>
+                       icon="ios-locked-outline" @on-enter="del('loginForm')"></Input>
             </FormItem>
             <FormItem>
                 <lang></lang>

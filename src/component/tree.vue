@@ -142,7 +142,8 @@
             },
             tocs: {
                 handler: function (val, oldval) {
-                    this.tree[0].children = JSON.parse(JSON.stringify(val));
+                    /*一旦全局tocs变化，则更新目录*/
+                    this.tree[0].children = this.combine(JSON.parse(JSON.stringify(val)));
                 },
                 immediate: true
             }
@@ -150,7 +151,7 @@
         mounted: function () {
             let _self = this;
             Request.fetchAsync('/nodes/' + _self.kind, 'get').then(data => {
-                this.tree[0].children = data;
+                this.tree[0].children = this.combine(data);
             });
         },
         methods: {
@@ -268,9 +269,53 @@
                     ])
                 ]);
             },
-            editNode(data) {
+            /*
+            * arrObj 必须是数组对象，且不能为空
+            * 将一纬度数组对象转换为无限层级的Tree形数组对象
+            * */
+            combine(rows) {
+                function exists(rows, parentId) {
+                    for (let i = 0; i < rows.length; i++) {
+                        if (rows[i].id === parentId) return true;
+                    }
+                    return false;
+                }
 
+                let nodes = [];
+                // get the top level nodes
+                for (let i = 0; i < rows.length; i++) {
+                    let row = rows[i];
+                    if (!exists(rows, row.parent_id)) {
+                        nodes.push(row);
+                    }
+                }
+
+                let toDo = [];
+                for (let i = 0; i < nodes.length; i++) {
+                    toDo.push(nodes[i]);
+                }
+                while (toDo.length) {
+                    let node = toDo.shift();    // the parent node
+                    // get the children nodes
+                    for (let i = 0; i < rows.length; i++) {
+                        let row = rows[i];
+                        if (row.parent_id === node.id) {
+                            let child = row;
+                            if (node.children) {
+                                node.children.push(child);
+                            } else {
+                                node.children = [child];
+                            }
+                            toDo.push(child);
+                        }
+                    }
+                }
+                return nodes;
+            },
+
+            editNode(data) {
                 this.nodeModal = true;
+                /*打开节点编辑模态框*/
                 this.data = data;
                 this.nodeTitle = data.title;
             },
@@ -278,6 +323,7 @@
                 let _self = this;
                 Request.fetchAsync('/admin/nodes/' + _self.data.id, 'patch', {"title": _self.nodeTitle}).then(result => {
                     _self.data.title = this.nodeTitle;
+                    /*关闭节点编辑模态框*/
                     _self.nodeModal = false;
                 });
 
@@ -314,7 +360,10 @@
                     const parentKey = root.find(el => el === node).parent;
                     const parent = root.find(el => el.nodeKey === parentKey).node;
                     const index = parent.children.indexOf(data);
-                    parent.children.splice(index, 1);
+                    Request.fetchAsync('/admin/nodes/' + data.id, 'delete').then(result => {
+                        parent.children.splice(index, 1);
+                    });
+
                 } else {
                     this.$Message.warning({
                         content: this.$t('tree.delNotice'),
@@ -322,18 +371,6 @@
                     })
                 }
 
-            },
-            /*保存*/
-            preserve(data) {
-                Request.fetchAsync('/tocs', 'post', {
-                    lang: this.$i18n.locale,
-                    value: JSON.stringify(data.children)
-                }).then(data => {
-                    this.$Message.success({
-                        content: this.$t('tree.success'),
-                        duration: 2
-                    })
-                })
             },
             /*向上移动一位*/
             upward(root, node, data) {
@@ -345,10 +382,16 @@
                 const index = parent.children.indexOf(data);
                 const length = parent.children.length;
                 if (index !== 0) {
-                    parent.children = parent.children.slice(0, index - 1).concat(parent.children.slice(index, index + 1), parent.children.slice(index - 1, index), parent.children.slice(index + 1, length));
+                    console.log(data.id, parent.children[index - 1].id);
+                    parent.children = parent.children.slice(0, index - 1).concat(
+                        parent.children.slice(index, index + 1),
+                        parent.children.slice(index - 1, index),
+                        parent.children.slice(index + 1, length)
+                    );
+
                 }
             },
-            ...mapActions([ 'getArticle', "getTocs"])
+            ...mapActions(['getArticle', "getTocs"])
 
         },
     }

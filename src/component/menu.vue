@@ -55,7 +55,7 @@
         },
         methods:{
             getN:function (name) {
-                this.getKind({"kind":name,"locale":this.$i18n.locale})
+                this.getKind({"kind":parseInt(name),"locale":this.$i18n.locale})
             },
             ...mapActions(['getKind'])
         }
