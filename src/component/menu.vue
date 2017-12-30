@@ -72,5 +72,6 @@
 
     .ivu-menu-horizontal{
         margin-bottom: 20px;
+        z-index: 800;
     }
 </style>

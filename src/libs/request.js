@@ -54,7 +54,18 @@ request.fetchAsync = async (url, method, data) => {
 
 request.uploadImg = async (url, method, data) => {
     try {
-        let response = await fetch(url, {method: method.toUpperCase(), body: data});
+        let header = new Headers();
+        let a = Util.getCookie('Authorization');
+
+        if (!!a) {
+            header.append('Authorization', a);
+        }
+        let response = await fetch(url, {method: method.toUpperCase(), body: data, headers: header});
+        if (response.status === 401) {
+            Util.setCookie('login', '', -1);
+            store.dispatch('showLogin', true);
+            throw new Error("401")
+        }
         return await response.json();
     } catch (e) {
         iView.Message.error({
@@ -68,7 +79,18 @@ request.uploadImg = async (url, method, data) => {
 
 request.uploadFile = async (url, method, data, header) => {
     try {
+
+        let a = Util.getCookie('Authorization');
+
+        if (!!a) {
+            header.append('Authorization', a);
+        }
         let response = await fetch(url, {method: method.toUpperCase(), body: data, headers: header});
+        if (response.status === 401) {
+            Util.setCookie('login', '', -1);
+            store.dispatch('showLogin', true);
+            throw new Error("401")
+        }
         return await response.json();
     } catch (e) {
         iView.Message.error({

@@ -11,9 +11,6 @@
         display: none;
     }
 
-    span.bg {
-        background-color: #f1f4f7;
-    }
 
     #editor .ivu-modal-body {
         padding: 0;
@@ -37,8 +34,9 @@
 <script>
     import Request from '../libs/request'
     import Mavon from './editor.vue';
-    import {mapActions, mapState} from 'vuex'
+    import {mapActions, mapGetters, mapState} from 'vuex'
     import moment from 'moment'
+    import Util from '../libs/util'
 
     export default {
         data() {
@@ -59,7 +57,8 @@
                             return h('span', {
                                 style: {
                                     display: 'inline-block',
-                                    width: '100%'
+                                    width: '100%',
+                                    height: '20px'
                                 }
                             }, [
                                 h('span', [
@@ -76,8 +75,8 @@
                                 h('span', {
                                     style: {
                                         display: 'inline-block',
-                                        float: 'right',
-                                        marginRight: '16px'
+                                        width: '93%',
+                                        textAlign: 'right',
                                     }
                                 }, [
                                     h('Button', {
@@ -107,7 +106,6 @@
                     size: 'small',
                 },
 
-
             }
         },
         components: {
@@ -116,15 +114,17 @@
         computed: {
             ...mapState({
                     'article': state => state.article,
-                    'tocs': state => state.tocs,
                     'kind': state => state.kind,
                 }
             ),
+            ...mapGetters([
+                'tocsTree',
+            ]),
             createTime: function () {
-                return moment(this.article.CreateTime).utc().format('YYYY-MM-DD HH:mm:ss')
+                return moment(this.article.created).utc().format('YYYY-MM-DD HH:mm:ss')
             },
             modifyTime: function () {
-                return moment(this.article.ModifyTime).utc().format('YYYY-MM-DD HH:mm:ss')
+                return moment(this.article.updated).utc().format('YYYY-MM-DD HH:mm:ss')
             },
             local: function () {
                 /*根据语言的变化触发local的watch*/
@@ -140,18 +140,17 @@
                 },
                 immediate: true
             },
-            tocs: {
+            tocsTree: {
                 handler: function (val, oldval) {
                     /*一旦全局tocs变化，则更新目录*/
-                    this.tree[0].children = this.combine(JSON.parse(JSON.stringify(val)));
+                    this.tree[0].children = JSON.parse(JSON.stringify(val));
                 },
                 immediate: true
             }
         },
         mounted: function () {
-            let _self = this;
-            Request.fetchAsync('/nodes/' + _self.kind, 'get').then(data => {
-                this.tree[0].children = this.combine(data);
+            Request.fetchAsync('/nodes/' + this.kind, 'get').then(data => {
+                this.tree[0].children = JSON.parse(JSON.stringify(Util.combine(data)))
             });
         },
         methods: {
@@ -159,10 +158,8 @@
                 return h('span', {
                     style: {
                         display: 'inline-block',
-                        width: '100%'
-                    },
-                    'class': {
-                        bg: data.active
+                        width: '100%',
+                        height: '26px',
                     },
                     on: {
                         /*鼠标经过显示按钮*/
@@ -184,14 +181,14 @@
                                 marginRight: '8px'
                             }
                         }),
-                        h('span', data.title)
+                        h('span', {
+                            style: {
+                                display: 'inline-block',
+                                width: '10%',
+                            }
+                        },data.title)
                     ]),
                     h('span', {
-                        style: {
-                            float: 'right',
-                            marginRight: '32px',
-
-                        },
                         'class': {
                             hide: !data.active
                         }
@@ -273,47 +270,10 @@
             * arrObj 必须是数组对象，且不能为空
             * 将一纬度数组对象转换为无限层级的Tree形数组对象
             * */
-            combine(rows) {
-                function exists(rows, parentId) {
-                    for (let i = 0; i < rows.length; i++) {
-                        if (rows[i].id === parentId) return true;
-                    }
-                    return false;
-                }
 
-                let nodes = [];
-                // get the top level nodes
-                for (let i = 0; i < rows.length; i++) {
-                    let row = rows[i];
-                    if (!exists(rows, row.parent_id)) {
-                        nodes.push(row);
-                    }
-                }
-
-                let toDo = [];
-                for (let i = 0; i < nodes.length; i++) {
-                    toDo.push(nodes[i]);
-                }
-                while (toDo.length) {
-                    let node = toDo.shift();    // the parent node
-                    // get the children nodes
-                    for (let i = 0; i < rows.length; i++) {
-                        let row = rows[i];
-                        if (row.parent_id === node.id) {
-                            let child = row;
-                            if (node.children) {
-                                node.children.push(child);
-                            } else {
-                                node.children = [child];
-                            }
-                            toDo.push(child);
-                        }
-                    }
-                }
-                return nodes;
-            },
 
             editNode(data) {
+                /*TODO 首先要询问是否有人在编辑*/
                 this.nodeModal = true;
                 /*打开节点编辑模态框*/
                 this.data = data;
@@ -329,11 +289,12 @@
 
             },
             editArticle(data) {
+                /*TODO 首先要询问是否有人在编辑*/
                 this.articleModal = true;
                 this.articleTitle = data.title;
                 let _self = this;
-                Request.fetchAsync('/articles/' + data.id, 'get').then(res => {
-                    _self.getArticle(res);
+                Request.fetchAsync('/articles/' + data.id, 'get').then(result => {
+                    _self.getArticle(result);
                 });
             },
             append(node, data) {
@@ -382,16 +343,21 @@
                 const index = parent.children.indexOf(data);
                 const length = parent.children.length;
                 if (index !== 0) {
-                    console.log(data.id, parent.children[index - 1].id);
-                    parent.children = parent.children.slice(0, index - 1).concat(
-                        parent.children.slice(index, index + 1),
-                        parent.children.slice(index - 1, index),
-                        parent.children.slice(index + 1, length)
-                    );
+
+                    Request.fetchAsync('/admin/nodekey/' + data.id, 'patch',
+                        {"id": parent.children[index - 1].id}
+                    ).then(result => {
+                        parent.children = parent.children.slice(0, index - 1).concat(
+                            parent.children.slice(index, index + 1),
+                            parent.children.slice(index - 1, index),
+                            parent.children.slice(index + 1, length)
+                        );
+                    });
+
 
                 }
             },
-            ...mapActions(['getArticle', "getTocs"])
+            ...mapActions(['getArticle',])
 
         },
     }

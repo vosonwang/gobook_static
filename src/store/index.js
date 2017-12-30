@@ -2,6 +2,7 @@ import Vue from 'vue'
 import Vuex from 'vuex'
 import createLogger from 'vuex/dist/logger'
 import Request from "../libs/request";
+import Util from '../libs/util'
 /*devtoolPlugin 和 createLogger() 2 个插件，它们是 Vuex 内置插件   链接：http://www.imooc.com/article/14741*/
 
 Vue.use(Vuex);
@@ -23,12 +24,12 @@ const state = {
     modal: false
 };
 
-// getters
-// const getters = {
-//     allProducts: state => {
-//
-//     }
-// }
+//getters
+const getters = {
+    tocsTree: state => {
+        return Util.combine(state.tocs)
+    }
+};
 
 const mutations = {
     [GET_ARTICLE](state, article) {
@@ -45,7 +46,7 @@ const mutations = {
     },
     [GET_Login](state, bool) {
         state.modal = bool
-    }
+    },
 
 };
 
@@ -74,12 +75,13 @@ const actions = {
     },
     showLogin({commit}, bool) {
         commit(GET_Login, bool)
-    },
+    }
 };
 
 export default new Vuex.Store({
     state,
     actions,
+    getters,
     mutations,
     strict: debug,
     plugins: debug !== debug ? [createLogger()] : []

@@ -13,12 +13,12 @@
 </style>
 <template>
     <div>
-        <mavon-editor default_open="edit" @subfieldtoggle="subfieldCallback" :value=this.article.value
-                      :toolbars=this.toolbars :ishljs="false" @save="saveArticle" @imgAdd="imgAdd"
+        <mavon-editor default_open="edit" @subfieldtoggle="subfieldCallback" :value=this.article.text
+                      :toolbars=this.toolbars :ishljs="false" @save="saveArticle" @imgAdd="uploadImg"
                       placeholder="写点什么..." ref=md></mavon-editor>
 
         <div class="ivu-upload ivu-upload-select" ref="diy">
-            <input type="file" class="ivu-upload-input" ref="input" @change="getFile">
+            <input type="file" class="ivu-upload-input" ref="input" @change="uploadFile">
             <button type="button" class="op-icon fa " aria-hidden="true" title="上传附件" style="margin-left: 3px;"
                     @click="upload">
                 <Icon type="arrow-up-a"></Icon>
@@ -32,7 +32,7 @@
 <script>
     import {mavonEditor} from 'mavon-editor'
     import 'mavon-editor/dist/css/index.css'
-    import {mapState, mapActions} from 'vuex'
+    import {mapActions, mapState} from 'vuex'
     import Request from '../libs/request'
     import utf8 from 'utf8'
 
@@ -94,7 +94,6 @@
         },
         computed: {
             ...mapState({
-                    'id': state => state.id,
                     'article': state => state.article,
                 }
             )
@@ -105,36 +104,28 @@
                 /*在点击双栏模式后，迫使预览模式的值和双栏模式保持一致*/
                 this.$children[0].s_preview_switch = this.$children[0].s_subfield
             },
-            saveArticle: function () {
+            saveArticle: function (value, render) {
                 let _self = this;
-                let a = this.$children[0].d_value;
-
-                Request.fetchAsync('/articles', 'post', {
-                    "id": this.id,
-                    "value": a,
-                    "html": this.$children[0].d_render
+                let n = JSON.parse(JSON.stringify(this.article));
+                // let a = this.$children[0].d_value;
+                //
+                Request.fetchAsync('/admin/articles/' + _self.article.id, 'patch', {
+                    "text": value,
                 }).then(data => {
-                    Request.fetchAsync('/articles/' + _self.id, 'get').then(res => {
-                        _self.getArticle(res);
-                    });
-
-                    this.$Message.success({
-                        content: this.$t('editor.artSuccess'),
-                        duration: 2
-                    });
-
-                    console.log(data)
+                    n.updated = data;
+                    n.text = value;
+                    _self.getArticle(n)
                 });
             },
-            imgAdd: function (filename, imgFile) {
-                Request.uploadImg('/images', 'post', imgFile).then(data =>
+            uploadImg: function (filename, imgFile) {
+                Request.uploadImg('/admin/images', 'post', imgFile).then(data =>
                     this.$refs.md.$img2Url(filename, data)
                 )
             },
             upload() {
                 this.$refs.input.click();
             },
-            getFile: function (e) {
+            uploadFile: function (e) {
 
                 let header = new Headers();
 
@@ -143,14 +134,14 @@
 
                 header.append('id', utf8.encode(a.name));
 
-                Request.uploadFile('/files', 'post', a, header).then(data => {
+                Request.uploadFile('/admin/files', 'post', a, header).then(data => {
                         /*清空上传文件，以便同一文件可以多次上传，否则同一个文件不会触发change事件*/
                         e.target.value = null;
 
                         /*在光标处插入上传的文件链接*/
                         this.$refs.md.insertText(this.$refs.md.getTextareaDom(),
                             {
-                                prefix: '\n[' + a.name + '](' +data + ')',
+                                prefix: '\n[' + a.name + '](' + data + ')',
                                 subfix: '',
                                 str: ''
                             })
