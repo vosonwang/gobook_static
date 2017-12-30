@@ -24,19 +24,11 @@ module.exports = merge(webpackBaseConfig, {
                 target: 'http://localhost:8300',
                 changeOrigin: true
             },
-            '/articles': {
-                target: 'http://localhost:8300',
-                changeOrigin: true
-            },
-            '/images': {
-                target: 'http://localhost:8300',
-                changeOrigin: true
-            },
-            '/files': {
-                target: 'http://localhost:8300',
-                changeOrigin: true
-            },
             '/nodes': {
+                target: 'http://localhost:8300',
+                changeOrigin: true
+            },
+            '/articles': {
                 target: 'http://localhost:8300',
                 changeOrigin: true
             },
@@ -44,6 +36,23 @@ module.exports = merge(webpackBaseConfig, {
                 target: 'http://localhost:8300',
                 changeOrigin: true
             },
+            '/admin/nodekey': {
+                target: 'http://localhost:8300',
+                changeOrigin: true
+            },
+            '/admin/articles': {
+                target: 'http://localhost:8300',
+                changeOrigin: true
+            },
+            '/admin/images': {
+                target: 'http://localhost:8300',
+                changeOrigin: true
+            },
+            '/admin/files': {
+                target: 'http://localhost:8300',
+                changeOrigin: true
+            },
+
         }
     },
     plugins: [
