@@ -1,47 +1,24 @@
-<style scoped lang="less">
-    .warp {
-        .header {
-            background-color: #49505F;
-            height: 55px;
-        }
-
-        .preview {
-            float: right;
-        }
-    }
-</style>
 <template>
-    <div class="warp">
-        <Row class="header">
-            <Col span="2" offset="22">
-            <User></User>
-            </Col>
-        </Row>
-        <Row>
-            <Col>
+    <Layout>
+        <Header :style="{height:'60px'}">
             <M></M>
-            </Col>
-        </Row>
-        <Row>
-            <Col span="16" offset="4">
-            <Card>
-
-                <!--<router-link :to="{ name: 'home'}"-->
-                             <!--active-class="preview ivu-btn ivu-btn-ghost ivu-btn-ghost ivu-btn-small">-->
-                    <!--{{$t('admin.preview')}}-->
-                <!--</router-link>-->
+            <User></User>
+        </Header>
+        <Content>
+            <Card dis-hover  :style="{margin:'20px auto',width:'60%'}">
                 <Catalog></Catalog>
             </Card>
-            </Col>
-        </Row>
+        </Content>
+        <f></f>
         <login></login>
-    </div>
+    </Layout>
 </template>
 <script>
     import Catalog from '../../component/tree.vue';
     import User from '../../component/user.vue'
     import M from '../../component/menu.vue'
     import Login from '../../component/login.vue'
+    import f from '../../component/footer.vue'
 
 
     export default {
@@ -49,8 +26,11 @@
             User,
             Catalog,
             M,
-            Login
+            Login,
+            f
         },
-
     }
 </script>
+<style>
+
+</style>

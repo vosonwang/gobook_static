@@ -1,5 +1,5 @@
 <template>
-    <Menu mode="horizontal" active-name="1" @on-select="getN">
+    <Menu mode="horizontal" active-name="1" @on-select="getN" :style="{zIndex:0}">
         <div class="layout-assistant">
             <MenuItem v-for="item in menu" :name="item.name" :key="item.name" >{{item.label}}</MenuItem>
         </div>
@@ -72,6 +72,5 @@
 
     .ivu-menu-horizontal{
         margin-bottom: 20px;
-        z-index: 800;
     }
 </style>

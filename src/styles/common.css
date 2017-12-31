@@ -7,6 +7,14 @@
 
 #login .ivu-modal-footer{
     padding-top: 1px;
-    padding-bottom: 0px;
+    padding-bottom: 0;
     border: none;
+}
+
+/*页头*/
+div.ivu-layout-header{
+    background: white;
+    padding: 0;
+    text-align: center;
+
 }

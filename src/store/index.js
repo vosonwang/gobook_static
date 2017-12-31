@@ -21,13 +21,20 @@ const state = {
     tocs: [],
     kind: 11,
     username: '',
-    modal: false
+    modal: false,
 };
 
 //getters
 const getters = {
     tocsTree: state => {
         return Util.combine(state.tocs)
+    },
+    menuName: (state, getters) => {
+        let a = [];
+        getters.tocsTree.forEach(function (v) {
+            a.push(v.id)
+        });
+        return a
     }
 };
 
@@ -39,7 +46,7 @@ const mutations = {
         state.kind = kind
     },
     [GET_Tocs](state, tocs) {
-        state.tocs = tocs
+        state.tocs = tocs;
     },
     [GET_User](state, username) {
         state.username = username
@@ -54,7 +61,6 @@ const mutations = {
 /*1.4 为HEIGHT_CHANGE发布action   -->  1.5 index.vue*/
 /*action 是为了commit mutation，只有mutation才能改变state*/
 const actions = {
-
     getArticle({commit}, article) {
         commit(GET_ARTICLE, article)
     },

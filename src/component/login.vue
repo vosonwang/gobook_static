@@ -87,14 +87,10 @@
                             } else {
                                 _self.modal_loading = false;
                                 this.showLogin(false);
-                                Util.setCookie("login", true, 1);
+                                Util.setCookie("login", true, 1/24);
                                 this.getUser(data.username);
                                 Util.setCookie("username", data.username, 1);
                                 Util.setCookie("userId", data.userId, 1);
-                                _self.$Message.success({
-                                    content: "登录成功！",
-                                    duration: 2,
-                                });
                                 Util.setCookie("Authorization", data.token, 1);
                             }
                         });

@@ -26,6 +26,9 @@ util.getCookie = function (cname) {
     return null;
 };
 
+/*
+* * arrObj 必须是数组对象，且不能为空
+* 将一纬度数组对象转换为无限层级的Tree形数组对象* */
 util.combine = function (rows) {
     function exists(rows, parentId) {
         for (let i = 0; i < rows.length; i++) {

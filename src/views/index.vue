@@ -1,49 +1,68 @@
 <style scoped lang="less">
-    .warp {
-        .header {
-            background-color: #49505F;
-            height: 55px;
-        }
 
-    }
 </style>
 <template>
-    <div class="warp">
-        <Row class="header">
-            <Col span="10" offset="7">
+    <Layout>
+        <Header :style="{height:'120px'}">
             <Search></Search>
-            </Col>
-        </Row>
-        <Row>
-            <Col>
             <M></M>
-            </Col>
-        </Row>
-        <Row>
-            <Col span="16" offset="4">
-            <Card>
-
+        </Header>
+        <Content>
+            <Card dis-hover :style="{margin:'20px auto',width:'80%'}">
+                <Row>
+                    <Col span="6">
+                    <Menu :open-names="menuName">
+                        <Submenu v-for="item in tocsTree" :name="item.id" :key="item.id">
+                            <template slot="title">
+                                <Icon type="ios-paper"></Icon>
+                                {{item.title}}
+                            </template>
+                            <MenuItem v-for="i in item.children" :name="i.id" :key="i.id">{{i.title}}</MenuItem>
+                        </Submenu>
+                    </Menu>
+                    </Col>
+                    <Col span="18">
+                    2
+                    </Col>
+                </Row>
             </Card>
-            </Col>
-        </Row>
-
-    </div>
+        </Content>
+        <f></f>
+    </Layout>
 </template>
 <script>
+    import {mapActions, mapGetters, mapState} from 'vuex'
     import Search from '../component/search'
     import M from '../component/menu.vue'
+    import f from '../component/footer.vue'
+
 
     export default {
-        data() {
-            return {
-                value13: '',
+        data(){
+            return{
 
             }
         },
+        mounted: function () {
+            this.getKind({"kind": 1, "locale": this.$i18n.locale});
+        },
+        computed: {
+            ...mapState({
+                    'kind': state => state.kind,
+                }
+            ),
+            ...mapGetters([
+                'tocsTree',
+                'menuName'
+            ])
+        },
         components: {
             Search,
-            M
+            M,
+            f
         },
-        methods: {}
+        methods: {
+            ...mapActions(['getKind'])
+        }
     }
 </script>

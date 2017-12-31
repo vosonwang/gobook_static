@@ -43,10 +43,8 @@
             return {
                 nodeModal: false,
                 nodeTitle: this.$t('tree.modTitle'),
-
                 articleModal: false,
                 articleTitle: "",
-
                 data: {}, //节点的数据
                 tree: [
                     {
@@ -105,7 +103,6 @@
                     type: 'ghost',
                     size: 'small',
                 },
-
             }
         },
         components: {
@@ -149,9 +146,7 @@
             }
         },
         mounted: function () {
-            Request.fetchAsync('/nodes/' + this.kind, 'get').then(data => {
-                this.tree[0].children = JSON.parse(JSON.stringify(Util.combine(data)))
-            });
+            this.getKind({"kind":1,"locale":this.$i18n.locale});
         },
         methods: {
             renderContent(h, {root, node, data}) {
@@ -266,12 +261,6 @@
                     ])
                 ]);
             },
-            /*
-            * arrObj 必须是数组对象，且不能为空
-            * 将一纬度数组对象转换为无限层级的Tree形数组对象
-            * */
-
-
             editNode(data) {
                 /*TODO 首先要询问是否有人在编辑*/
                 this.nodeModal = true;
@@ -357,7 +346,7 @@
 
                 }
             },
-            ...mapActions(['getArticle',])
+            ...mapActions(['getArticle','getKind'])
 
         },
     }

@@ -15,7 +15,7 @@
   "author": "Voson",
   "license": "MIT",
   "dependencies": {
-    "iview": "^2.7.3",
+    "iview": "^2.8.0",
     "mavon-editor": "^2.4.3",
     "messageformat": "^1.1.0",
     "moment": "^2.19.3",

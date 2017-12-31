@@ -3,7 +3,7 @@
             v-model="value4"
             icon="ios-search"
             :placeholder="placeholder"
-            style="width:100%;margin-top:10px">
+            style="width: 40%;text-align: left;">
         <div class="demo-auto-complete-item" v-for="item in data4">
             <div class="demo-auto-complete-group">
                 <span>{{ item.title }}</span>
@@ -70,6 +70,9 @@
     }
 </script>
 <style>
+    .ivu-select-dropdown{
+        z-index: 1000;
+    }
     .demo-auto-complete-item{
         padding: 4px 0;
         border-bottom: 1px solid #F6F6F6;
