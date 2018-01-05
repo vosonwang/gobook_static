@@ -55,9 +55,11 @@
         },
         methods:{
             getN:function (name) {
+                this.getArticle({});
                 this.getKind({"kind":parseInt(name),"locale":this.$i18n.locale})
+
             },
-            ...mapActions(['getKind'])
+            ...mapActions(['getKind', 'getArticle'])
         }
     }
 </script>

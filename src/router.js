@@ -14,7 +14,14 @@ const routers = [
             title: '首页'
         },
         name: 'home',
-        component: (resolve) => require(['./views/index.vue'], resolve)
+        component: (resolve) => require(['./views/index.vue'], resolve),
+        children: [
+            {
+                path: '/kb/:id',
+                name:'article',
+                component: (resolve) => require(['./component/article.vue'], resolve)
+            }
+        ]
     },
     {
         path:'/admin',
@@ -23,17 +30,7 @@ const routers = [
         },
         name: 'admin',
         component:(resolve) => require(['./views/admin/index.vue'], resolve),
-        // children: [
-        //     {
-        //         path: '/editor',
-        //         meta: {
-        //
-        //             title: '编辑器'
-        //         },
-        //         name:'editor',
-        //         component: (resolve) => require(['./component/editor.vue'], resolve)
-        //     }
-        // ]
+
     }
 ];
 

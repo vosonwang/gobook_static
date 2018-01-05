@@ -67,7 +67,7 @@ module.exports = merge(webpackBaseConfig, {
         new HtmlWebpackPlugin({
             filename: '../index.html',
             template: './src/template/index.ejs',
-            // favicon: '',
+            // TODO favicon: '',
             inject: false
         })
     ]

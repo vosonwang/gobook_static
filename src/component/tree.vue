@@ -11,7 +11,6 @@
         display: none;
     }
 
-
     #editor .ivu-modal-body {
         padding: 0;
     }
@@ -20,7 +19,11 @@
     <div>
         <Tree :data="tree" :render="renderContent"></Tree>
         <Modal v-model="nodeModal" @on-ok="ok">
-            <Input v-model="nodeTitle" @on-enter="ok"></Input>
+            <Input v-model="nodeTitle" @on-enter="ok" style="margin-bottom: 20px;"></Input>
+            <!--TODO 国际化-->
+            <!--TODO 缩小字体为12px-->
+            <Input v-model="value8" type="textarea" :autosize="{minRows: 2,maxRows: 5}"
+                   placeholder="Enter something..."></Input>
         </Modal>
         <Modal v-model="articleModal" width="1100" :title="articleTitle" id="editor">
             <Mavon></Mavon>
@@ -34,13 +37,13 @@
 <script>
     import Request from '../libs/request'
     import Mavon from './editor.vue';
-    import {mapActions, mapGetters, mapState} from 'vuex'
+    import {mapActions, mapState} from 'vuex'
     import moment from 'moment'
-    import Util from '../libs/util'
 
     export default {
         data() {
             return {
+                value8: "",
                 nodeModal: false,
                 nodeTitle: this.$t('tree.modTitle'),
                 articleModal: false,
@@ -112,11 +115,9 @@
             ...mapState({
                     'article': state => state.article,
                     'kind': state => state.kind,
+                    'tocs': state => state.tocs,
                 }
             ),
-            ...mapGetters([
-                'tocsTree',
-            ]),
             createTime: function () {
                 return moment(this.article.created).utc().format('YYYY-MM-DD HH:mm:ss')
             },
@@ -137,7 +138,7 @@
                 },
                 immediate: true
             },
-            tocsTree: {
+            tocs: {
                 handler: function (val, oldval) {
                     /*一旦全局tocs变化，则更新目录*/
                     this.tree[0].children = JSON.parse(JSON.stringify(val));
@@ -146,7 +147,7 @@
             }
         },
         mounted: function () {
-            this.getKind({"kind":1,"locale":this.$i18n.locale});
+            this.getKind({"kind": 1, "locale": this.$i18n.locale});
         },
         methods: {
             renderContent(h, {root, node, data}) {
@@ -179,11 +180,13 @@
                         h('span', {
                             style: {
                                 display: 'inline-block',
-                                width: '10%',
                             }
-                        },data.title)
+                        }, data.title)
                     ]),
                     h('span', {
+                        style: {
+                            marginLeft: '30px',
+                        },
                         'class': {
                             hide: !data.active
                         }
@@ -346,7 +349,7 @@
 
                 }
             },
-            ...mapActions(['getArticle','getKind'])
+            ...mapActions(['getArticle', 'getKind'])
 
         },
     }

@@ -9,11 +9,6 @@ Vue.use(Vuex);
 
 const debug = process.env.NODE_ENV !== 'production';
 
-const GET_ARTICLE = 'GET_ARTICLE';
-const GET_Kind = 'GET_Kind';
-const GET_Tocs = 'GET_Tocs';
-const GET_User = 'GET_User';
-const GET_Login = 'GET_Login';
 
 // initial state
 const state = {
@@ -22,38 +17,37 @@ const state = {
     kind: 11,
     username: '',
     modal: false,
+    titleList:[]
 };
 
-//getters
-const getters = {
-    tocsTree: state => {
-        return Util.combine(state.tocs)
-    },
-    menuName: (state, getters) => {
-        let a = [];
-        getters.tocsTree.forEach(function (v) {
-            a.push(v.id)
-        });
-        return a
-    }
-};
+const GET_ARTICLE = 'GET_ARTICLE';
+const GET_KIND = 'GET_KIND';
+const GET_TOCS = 'GET_TOCS';
+const GET_USER = 'GET_USER';
+const GET_LOGIN = 'GET_LOGIN';
+const GET_LIST = 'GET_LIST';
+
 
 const mutations = {
     [GET_ARTICLE](state, article) {
         state.article = article
     },
-    [GET_Kind](state, kind) {
+    [GET_KIND](state, kind) {
         state.kind = kind
     },
-    [GET_Tocs](state, tocs) {
+    [GET_TOCS](state, tocs) {
         state.tocs = tocs;
     },
-    [GET_User](state, username) {
+    [GET_USER](state, username) {
         state.username = username
     },
-    [GET_Login](state, bool) {
+    [GET_LOGIN](state, bool) {
         state.modal = bool
     },
+    [GET_LIST](state, list) {
+        state.titleList = list
+    },
+
 
 };
 
@@ -65,7 +59,7 @@ const actions = {
         commit(GET_ARTICLE, article)
     },
     getUser({commit}, username) {
-        commit(GET_User, username)
+        commit(GET_USER, username)
     },
     getKind({commit}, {kind, locale}) {
         let a;
@@ -74,20 +68,23 @@ const actions = {
         } else {
             a = 20 + kind;
         }
-        commit(GET_Kind, a);
+        commit(GET_KIND, a);
         Request.fetchAsync('/nodes/' + a, 'GET').then(data => {
-            commit(GET_Tocs, data);
+            commit(GET_TOCS, Util.combine(data));
+
         });
     },
     showLogin({commit}, bool) {
-        commit(GET_Login, bool)
+        commit(GET_LOGIN, bool)
+    },
+    getList({commit}, list) {
+        commit(GET_LIST, list)
     }
 };
 
 export default new Vuex.Store({
     state,
     actions,
-    getters,
     mutations,
     strict: debug,
     plugins: debug !== debug ? [createLogger()] : []

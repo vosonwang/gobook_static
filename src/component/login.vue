@@ -40,8 +40,10 @@
                     username: '',
                     password: '',
                 },
+
                 ruleInline: {
                     username: [
+                        /*TODO 国际化*/
                         {required: true, message: 'Please fill in the user name', trigger: 'blur'}
                     ],
                     password: [

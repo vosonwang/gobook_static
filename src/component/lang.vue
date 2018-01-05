@@ -5,6 +5,7 @@
 </style>
 <template>
     <Select v-model="locale" @on-change="change">
+        <!--TODO bug 选择语言后提示错误-->
         <Option v-for="item in langList" :value="item.value" :key="item.value">{{item.label}}</Option>
     </Select>
 </template>

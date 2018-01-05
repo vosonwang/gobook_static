@@ -2,11 +2,11 @@
 
     .v-note-wrapper div.v-note-panel {
         box-shadow: none;
-        border-top: 1px solid #E9EAEC
     }
 
     .v-note-wrapper div.v-note-op {
         box-shadow: none;
+        border-bottom: 1px solid #E9EAEC
     }
 
 

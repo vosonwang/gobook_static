@@ -6,6 +6,7 @@ import i18n from './libs/i18n'
 import router from './router'
 
 
+
 new Vue({
     el: '#app',
     store,
